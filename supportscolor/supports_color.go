@@ -53,6 +53,20 @@ func termSupportsColor(term string) bool {
 	return rv
 }
 
+/*
+Function determines if the current process should support colors in the
+terminal, and returns a `bool` verdict.
+
+If the process is passed `--no-color` or `--color` it will override the
+automatic detection.
+
+SupportsColor detects:
+	- stdout is not a TTY
+	- COLORTERM enviroment variable is set.
+	- TERM enviroment variable is set to DUMB
+	- TERM enviroment variable is set to a reasonable value.
+
+*/
 func SupportsColor() bool {
 	if stringInArgs("--no-color", os.Args) {
 		return false
