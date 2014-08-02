@@ -23,22 +23,42 @@ import (
 	"regexp"
 )
 
-func stringInArray(needle string, haystack []string) bool {
+func stringInArgs(needle string, haystack []string) bool {
 	for _, v := range haystack {
 		if v == needle {
 			return true
+		}
+
+		// if we see a --, assume we are chain calling into
+		// another program, and we don't want to assume we can
+		// interpert it.
+		if v == "--" {
+			break
 		}
 	}
 
 	return false
 }
 
-func SupportsColor() bool {
-	if stringInArray("--no-color", os.Args) {
+func termSupportsColor(term string) bool {
+	if term == "dumb" {
 		return false
 	}
 
-	if stringInArray("--color", os.Args) {
+	rv, err := regexp.MatchString("(^screen|^xterm|^vt100|color|ansi|cygwin|linux)", term)
+	if err != nil {
+		return false
+	}
+
+	return rv
+}
+
+func SupportsColor() bool {
+	if stringInArgs("--no-color", os.Args) {
+		return false
+	}
+
+	if stringInArgs("--color", os.Args) {
 		return true
 	}
 
@@ -52,14 +72,5 @@ func SupportsColor() bool {
 
 	var term = os.Getenv("TERM")
 
-	if term == "dumb" {
-		return false
-	}
-
-	rv, err := regexp.MatchString("(^screen|^xterm|^vt100|color|ansi|cygwin|linux)", term)
-	if err != nil {
-		return false
-	}
-
-	return rv
+	return termSupportsColor(term)
 }
