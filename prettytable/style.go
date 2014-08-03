@@ -17,6 +17,10 @@
 
 package prettytable
 
+import (
+	"github.com/pquerna/termchalk/ansistyle"
+)
+
 type TableStyler interface {
 	Top() string
 	TopMid() string
@@ -38,8 +42,19 @@ type TableStyler interface {
 	Alignment() PadDirection
 }
 
+type DataStyler interface {
+	Header(col int, value string) string
+	Cell(colName string, row int, col int, value string) string
+}
+
+type Styler interface {
+	TableStyler
+	DataStyler
+}
+
 type DefaultStyle struct {
 	UnicodeBox
+	BoldHeaders
 }
 
 type UnicodeBox struct {
@@ -47,6 +62,17 @@ type UnicodeBox struct {
 
 type ClassicBox struct {
 	UnicodeBox
+}
+
+type BoldHeaders struct {
+}
+
+func (bh *BoldHeaders) Header(col int, value string) string {
+	return ansistyle.Bold.Open + value + ansistyle.Bold.Close
+}
+
+func (bh *BoldHeaders) Cell(colName string, row int, col int, value string) string {
+	return value
 }
 
 func (ds *UnicodeBox) Alignment() PadDirection {

@@ -30,10 +30,11 @@ type PrettyTableSorter func(n int, s InterfaceArray) sort.Interface
 type PrettyTable struct {
 	header      []string
 	rows        [][]interface{}
+	rowsStr     [][]string
 	SortBy      string
 	SortReverse bool
 	Sorter      PrettyTableSorter
-	Styler      TableStyler
+	Styler      Styler
 }
 
 func New(header []string) *PrettyTable {
@@ -78,6 +79,24 @@ func longestLine(s string) int {
 	return rv
 }
 
+func (pt *PrettyTable) styleData() {
+	var headers = make([]string, len(pt.header))
+	for i, v := range pt.header {
+		headers[i] = pt.Styler.Header(i, v)
+	}
+
+	var rows = make([][]string, len(pt.rows))
+	for i, row := range pt.rows {
+		rows[i] = make([]string, len(row))
+		for j, cell := range row {
+			rows[i][j] = pt.Styler.Cell(pt.header[j], i, j, cellStr(cell))
+		}
+	}
+
+	pt.header = headers
+	pt.rowsStr = rows
+}
+
 func (pt *PrettyTable) colWidths() []int {
 	widths := make([]int, len(pt.header))
 	padding := pt.Styler.Padding() * 2
@@ -101,6 +120,20 @@ func (pt *PrettyTable) colWidths() []int {
 
 func (pt *PrettyTable) String() string {
 	b := bytes.Buffer{}
+
+	if pt.SortBy != "" {
+		n := pos(pt.SortBy, pt.header)
+		if n != -1 {
+			s := pt.Sorter(n, pt.rows)
+			if pt.SortReverse {
+				sort.Sort(sort.Reverse(s))
+			} else {
+				sort.Sort(s)
+			}
+		}
+	}
+
+	pt.styleData()
 
 	colWidths := pt.colWidths()
 
@@ -142,25 +175,13 @@ func (pt *PrettyTable) String() string {
 	b.WriteString(pt.Styler.Right())
 	b.WriteString("\n")
 
-	if pt.SortBy != "" {
-		n := pos(pt.SortBy, pt.header)
-		if n != -1 {
-			s := pt.Sorter(n, pt.rows)
-			if pt.SortReverse {
-				sort.Sort(sort.Reverse(s))
-			} else {
-				sort.Sort(s)
-			}
-		}
-	}
-
-	for _, v := range pt.rows {
+	for _, v := range pt.rowsStr {
 		// TODO: padding/centers
 		// TOOD: multi-line strings
 		b.WriteString(pt.Styler.Left())
 		for i, cell := range v {
 			cstr := padString(
-				cellStr(cell),
+				cell,
 				colWidths[i],
 				" ",
 				pt.Styler.Alignment())
