@@ -7,6 +7,7 @@
 # Sub-Packages:
 
 * [ansistyle](./ansistyle/README.md): Low level ANSI color codes.
+* [prettytable](./prettytable/README.md): Render tables of data to the terminal.
 * [supportscolor](./supportscolor/README.md): Detect if terminal can support color.
 * [termwidth](./termwidth/README.md): Calculate the width of strings as rendered by a terminal.
 
