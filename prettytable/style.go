@@ -35,6 +35,7 @@ type TableStyler interface {
 	Middle() string
 	Truncate() string
 	Padding() int
+	Alignment() PadDirection
 }
 
 type DefaultStyle struct {
@@ -44,8 +45,16 @@ type DefaultStyle struct {
 type UnicodeBox struct {
 }
 
+type ClassicBox struct {
+	UnicodeBox
+}
+
+func (ds *UnicodeBox) Alignment() PadDirection {
+	return PadCenter
+}
+
 func (ds *UnicodeBox) Padding() int {
-	return 1
+	return 2
 }
 
 func (ds *UnicodeBox) Top() string {
@@ -101,4 +110,59 @@ func (ds *UnicodeBox) Middle() string {
 
 func (ds *UnicodeBox) Truncate() string {
 	return "…"
+}
+
+func (ds *ClassicBox) Top() string {
+	return "-"
+}
+func (ds *ClassicBox) TopMid() string {
+	return "+"
+}
+func (ds *ClassicBox) TopLeft() string {
+	return "+"
+}
+func (ds *ClassicBox) TopRight() string {
+	return "+"
+}
+
+func (ds *ClassicBox) Bottom() string {
+	return "-"
+}
+func (ds *ClassicBox) BottomMid() string {
+	return "+"
+}
+func (ds *ClassicBox) BottomLeft() string {
+	return "+"
+}
+func (ds *ClassicBox) BottomRight() string {
+	return "+"
+}
+
+func (ds *ClassicBox) Left() string {
+	return "|"
+}
+func (ds *ClassicBox) LeftMid() string {
+	return "+"
+}
+
+func (ds *ClassicBox) Right() string {
+	return "|"
+}
+func (ds *ClassicBox) RightMid() string {
+	return "+"
+}
+
+func (ds *ClassicBox) Mid() string {
+	return "-"
+}
+func (ds *ClassicBox) MidMid() string {
+	return "+"
+}
+
+func (ds *ClassicBox) Middle() string {
+	return "|"
+}
+
+func (ds *ClassicBox) Truncate() string {
+	return "..."
 }

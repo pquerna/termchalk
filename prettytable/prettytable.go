@@ -106,9 +106,11 @@ func (pt *PrettyTable) String() string {
 
 	// TODO: refactor
 	b.WriteString(pt.Styler.TopLeft())
-	for _, v := range colWidths {
+	for i, v := range colWidths {
 		b.WriteString(strings.Repeat(pt.Styler.Top(), v))
-		b.WriteString(pt.Styler.TopMid())
+		if i < len(colWidths)-1 {
+			b.WriteString(pt.Styler.TopMid())
+		}
 	}
 	b.WriteString(pt.Styler.TopRight())
 	b.WriteString("\n")
@@ -120,18 +122,22 @@ func (pt *PrettyTable) String() string {
 			v,
 			colWidths[i],
 			" ",
-			padRight)
+			pt.Styler.Alignment())
 
 		b.WriteString(cstr)
-		b.WriteString(pt.Styler.Middle())
+		if i < len(pt.header)-1 {
+			b.WriteString(pt.Styler.Middle())
+		}
 	}
 	b.WriteString(pt.Styler.Right())
 	b.WriteString("\n")
 
 	b.WriteString(pt.Styler.Left())
-	for _, v := range colWidths {
+	for i, v := range colWidths {
 		b.WriteString(strings.Repeat(pt.Styler.Mid(), v))
-		b.WriteString(pt.Styler.MidMid())
+		if i < len(colWidths)-1 {
+			b.WriteString(pt.Styler.MidMid())
+		}
 	}
 	b.WriteString(pt.Styler.Right())
 	b.WriteString("\n")
@@ -157,10 +163,12 @@ func (pt *PrettyTable) String() string {
 				cellStr(cell),
 				colWidths[i],
 				" ",
-				padRight)
+				pt.Styler.Alignment())
 
 			b.WriteString(cstr)
-			b.WriteString(pt.Styler.Middle())
+			if i < len(v)-1 {
+				b.WriteString(pt.Styler.Middle())
+			}
 		}
 		b.WriteString(pt.Styler.Right())
 		b.WriteString("\n")
@@ -168,9 +176,11 @@ func (pt *PrettyTable) String() string {
 
 	// TODO: refactor
 	b.WriteString(pt.Styler.BottomLeft())
-	for _, v := range colWidths {
+	for i, v := range colWidths {
 		b.WriteString(strings.Repeat(pt.Styler.Bottom(), v))
-		b.WriteString(pt.Styler.BottomMid())
+		if i < len(colWidths)-1 {
+			b.WriteString(pt.Styler.BottomMid())
+		}
 	}
 	b.WriteString(pt.Styler.BottomRight())
 	b.WriteString("\n")

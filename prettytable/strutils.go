@@ -23,23 +23,23 @@ import (
 	"strings"
 )
 
-type padDirection int
+type PadDirection int
 
 const (
-	padLeft padDirection = 1 << iota
-	padRight
-	padCenter
+	PadLeft PadDirection = 1 << iota
+	PadRight
+	PadCenter
 )
 
-func padString(s string, l int, padChr string, direction padDirection) string {
+func padString(s string, l int, padChr string, direction PadDirection) string {
 	slen := termwidth.Width(s)
 	if l+1 >= slen {
 		switch direction {
-		case padLeft:
+		case PadLeft:
 			s = strings.Repeat(padChr, l-slen) + s
-		case padRight:
+		case PadRight:
 			s = s + strings.Repeat(padChr, l-slen)
-		case padCenter:
+		case PadCenter:
 			padlen := ((float64(l) - float64(slen)) / float64(2.0))
 			right := int(math.Ceil(padlen))
 			left := int(math.Floor(padlen))
