@@ -145,15 +145,19 @@ func (pt *PrettyTable) String() string {
 		// TODO: padding/centers
 		// TOOD: multi-line strings
 		b.WriteString(pt.Styler.Left())
-		for _, cell := range v {
-			b.WriteString(cellStr(cell))
-			b.WriteString(pt.Styler.Middle())
+		for i, cell := range v {
+			cstr := padString(
+				cellStr(cell),
+				colWidths[i],
+				" ",
+				padCenter)
 
+			b.WriteString(cstr)
+			b.WriteString(pt.Styler.Middle())
 		}
 		b.WriteString(pt.Styler.Right())
 		b.WriteString("\n")
 	}
-	b.WriteString("\n")
 
 	// TODO: refactor
 	b.WriteString(pt.Styler.BottomLeft())
