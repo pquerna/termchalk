@@ -120,7 +120,7 @@ func (pt *PrettyTable) String() string {
 			v,
 			colWidths[i],
 			" ",
-			padCenter)
+			padRight)
 
 		b.WriteString(cstr)
 		b.WriteString(pt.Styler.Middle())
@@ -157,7 +157,7 @@ func (pt *PrettyTable) String() string {
 				cellStr(cell),
 				colWidths[i],
 				" ",
-				padCenter)
+				padRight)
 
 			b.WriteString(cstr)
 			b.WriteString(pt.Styler.Middle())

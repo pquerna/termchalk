@@ -36,9 +36,9 @@ func padString(s string, l int, padChr string, direction padDirection) string {
 	if l+1 >= slen {
 		switch direction {
 		case padLeft:
-			s = strings.Repeat(padChr, l+1-slen) + s
+			s = strings.Repeat(padChr, l-slen) + s
 		case padRight:
-			s = s + strings.Repeat(padChr, l+1-slen)
+			s = s + strings.Repeat(padChr, l-slen)
 		case padCenter:
 			padlen := ((float64(l) - float64(slen)) / float64(2.0))
 			right := int(math.Ceil(padlen))
