@@ -37,59 +37,63 @@ type TableStyler interface {
 }
 
 type DefaultStyle struct {
+	UnicodeBox
 }
 
-func (ds *DefaultStyle) Top() string {
+type UnicodeBox struct {
+}
+
+func (ds *UnicodeBox) Top() string {
 	return "─"
 }
-func (ds *DefaultStyle) TopMid() string {
+func (ds *UnicodeBox) TopMid() string {
 	return "┬"
 }
-func (ds *DefaultStyle) TopLeft() string {
+func (ds *UnicodeBox) TopLeft() string {
 	return "┌"
 }
-func (ds *DefaultStyle) TopRight() string {
+func (ds *UnicodeBox) TopRight() string {
 	return "┐"
 }
 
-func (ds *DefaultStyle) Bottom() string {
+func (ds *UnicodeBox) Bottom() string {
 	return "─"
 }
-func (ds *DefaultStyle) BottomMid() string {
+func (ds *UnicodeBox) BottomMid() string {
 	return "┴"
 }
-func (ds *DefaultStyle) BottomLeft() string {
+func (ds *UnicodeBox) BottomLeft() string {
 	return "└"
 }
-func (ds *DefaultStyle) BottomRight() string {
+func (ds *UnicodeBox) BottomRight() string {
 	return "┘"
 }
 
-func (ds *DefaultStyle) Left() string {
+func (ds *UnicodeBox) Left() string {
 	return "│"
 }
-func (ds *DefaultStyle) LeftMid() string {
+func (ds *UnicodeBox) LeftMid() string {
 	return "├"
 }
 
-func (ds *DefaultStyle) Right() string {
+func (ds *UnicodeBox) Right() string {
 	return "│"
 }
-func (ds *DefaultStyle) RightMid() string {
+func (ds *UnicodeBox) RightMid() string {
 	return "├"
 }
 
-func (ds *DefaultStyle) Mid() string {
+func (ds *UnicodeBox) Mid() string {
 	return "─"
 }
-func (ds *DefaultStyle) MidMid() string {
+func (ds *UnicodeBox) MidMid() string {
 	return "┼"
 }
 
-func (ds *DefaultStyle) Middle() string {
+func (ds *UnicodeBox) Middle() string {
 	return "│"
 }
 
-func (ds *DefaultStyle) Truncate() string {
+func (ds *UnicodeBox) Truncate() string {
 	return "…"
 }
