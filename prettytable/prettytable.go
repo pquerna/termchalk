@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/pquerna/termchalk/termwidth"
 	"sort"
+	"strings"
 )
 
 type PrettyTableSorter func(n int, s InterfaceArray) sort.Interface
@@ -65,22 +66,67 @@ func intMax(a int, b int) int {
 	return b
 }
 
+func cellStr(v interface{}) string {
+	return fmt.Sprint(v)
+}
+
+func longestLine(s string) int {
+	rv := 0
+	for _, v := range strings.Split(s, "\n") {
+		rv = intMax(termwidth.Width(v), rv)
+	}
+	return rv
+}
+
 func (pt *PrettyTable) colWidths() []int {
-	headerWidths := make([]int, len(pt.header))
+	widths := make([]int, len(pt.header))
 	for i, v := range pt.header {
-		headerWidths[i] = termwidth.Width(v)
+		widths[i] = termwidth.Width(v)
 	}
 
-	widths := make([]int, len(pt.header))
+	for _, row := range pt.rows {
+		for j, cell := range row {
+			if j > len(pt.header) {
+				continue
+			}
+
+			s := cellStr(cell)
+			widths[j] = intMax(longestLine(s), widths[j])
+		}
+	}
+
 	return widths
 }
 
 func (pt *PrettyTable) String() string {
 	b := bytes.Buffer{}
 
-	_ = pt.colWidths()
+	colWidths := pt.colWidths()
 
-	b.WriteString(fmt.Sprint(pt.header))
+	// TODO: refactor
+	b.WriteString(pt.Styler.TopLeft())
+	for _, v := range colWidths {
+		b.WriteString(strings.Repeat(pt.Styler.Top(), v))
+		b.WriteString(pt.Styler.TopMid())
+	}
+	b.WriteString(pt.Styler.TopRight())
+	b.WriteString("\n")
+
+	b.WriteString(pt.Styler.Left())
+	for _, v := range pt.header {
+		// TODO: padding/centers
+		b.WriteString(v)
+		b.WriteString(pt.Styler.Middle())
+	}
+	b.WriteString(pt.Styler.Right())
+	b.WriteString("\n")
+
+	b.WriteString(pt.Styler.Left())
+	for _, v := range colWidths {
+		b.WriteString(strings.Repeat(pt.Styler.Mid(), v))
+		b.WriteString(pt.Styler.MidMid())
+	}
+	b.WriteString(pt.Styler.Right())
 	b.WriteString("\n")
 
 	if pt.SortBy != "" {
@@ -96,8 +142,27 @@ func (pt *PrettyTable) String() string {
 	}
 
 	for _, v := range pt.rows {
-		b.WriteString(fmt.Sprint(v))
+		// TODO: padding/centers
+		// TOOD: multi-line strings
+		b.WriteString(pt.Styler.Left())
+		for _, cell := range v {
+			b.WriteString(cellStr(cell))
+			b.WriteString(pt.Styler.Middle())
+
+		}
+		b.WriteString(pt.Styler.Right())
 		b.WriteString("\n")
 	}
+	b.WriteString("\n")
+
+	// TODO: refactor
+	b.WriteString(pt.Styler.BottomLeft())
+	for _, v := range colWidths {
+		b.WriteString(strings.Repeat(pt.Styler.Bottom(), v))
+		b.WriteString(pt.Styler.BottomMid())
+	}
+	b.WriteString(pt.Styler.BottomRight())
+	b.WriteString("\n")
+
 	return b.String()
 }
