@@ -80,8 +80,9 @@ func longestLine(s string) int {
 
 func (pt *PrettyTable) colWidths() []int {
 	widths := make([]int, len(pt.header))
+	padding := pt.Styler.Padding() * 2
 	for i, v := range pt.header {
-		widths[i] = termwidth.Width(v)
+		widths[i] = termwidth.Width(v) + padding
 	}
 
 	for _, row := range pt.rows {
@@ -91,7 +92,7 @@ func (pt *PrettyTable) colWidths() []int {
 			}
 
 			s := cellStr(cell)
-			widths[j] = intMax(longestLine(s), widths[j])
+			widths[j] = intMax(longestLine(s)+padding, widths[j])
 		}
 	}
 
@@ -113,9 +114,15 @@ func (pt *PrettyTable) String() string {
 	b.WriteString("\n")
 
 	b.WriteString(pt.Styler.Left())
-	for _, v := range pt.header {
+	for i, v := range pt.header {
 		// TODO: padding/centers
-		b.WriteString(v)
+		cstr := padString(
+			v,
+			colWidths[i],
+			" ",
+			padCenter)
+
+		b.WriteString(cstr)
 		b.WriteString(pt.Styler.Middle())
 	}
 	b.WriteString(pt.Styler.Right())

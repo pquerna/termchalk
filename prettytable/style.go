@@ -34,6 +34,7 @@ type TableStyler interface {
 	MidMid() string
 	Middle() string
 	Truncate() string
+	Padding() int
 }
 
 type DefaultStyle struct {
@@ -41,6 +42,10 @@ type DefaultStyle struct {
 }
 
 type UnicodeBox struct {
+}
+
+func (ds *UnicodeBox) Padding() int {
+	return 1
 }
 
 func (ds *UnicodeBox) Top() string {
