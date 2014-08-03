@@ -21,13 +21,23 @@ import "testing"
 
 func TestPad(t *testing.T) {
 
-	x := padString("foo", 7, " ", padCenter)
+	x := padString("foo", 7, " ", PadCenter)
 	if x != "  foo  " {
 		t.Fatal("foo not centered.")
 	}
 
-	x = padString("foo", 8, " ", padCenter)
+	x = padString("foo", 8, " ", PadCenter)
 	if x != "  foo   " {
 		t.Fatal("foo not centered.")
+	}
+
+	x = padString("foo", 8, " ", PadLeft)
+	if x != "     foo" {
+		t.Fatal("foo not left'ed.")
+	}
+
+	x = padString("foo", 8, " ", PadRight)
+	if x != "foo     " {
+		t.Fatal("foo not right'ed.")
 	}
 }
