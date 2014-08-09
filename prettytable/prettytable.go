@@ -138,6 +138,26 @@ func (pt *PrettyTable) writeLine(b StringWriter, widths []int,
 	b.WriteString("\n")
 }
 
+func (pt *PrettyTable) writeRow(b StringWriter, widths []int, cols []string) {
+
+	b.WriteString(pt.Styler.Left())
+	for i, v := range cols {
+		// TODO: padding/centers
+		cstr := padString(
+			v,
+			widths[i],
+			" ",
+			pt.Styler.Alignment())
+
+		b.WriteString(cstr)
+		if i < len(cols)-1 {
+			b.WriteString(pt.Styler.Middle())
+		}
+	}
+	b.WriteString(pt.Styler.Right())
+	b.WriteString("\n")
+}
+
 func (pt *PrettyTable) Outout(b StringWriter) {
 
 	termwidth := terminfo.WindowWidth()
@@ -170,22 +190,9 @@ func (pt *PrettyTable) Outout(b StringWriter) {
 		pt.Styler.TopMid(),
 		pt.Styler.TopRight())
 
-	b.WriteString(pt.Styler.Left())
-	for i, v := range pt.header {
-		// TODO: padding/centers
-		cstr := padString(
-			v,
-			colWidths[i],
-			" ",
-			pt.Styler.Alignment())
-
-		b.WriteString(cstr)
-		if i < len(pt.header)-1 {
-			b.WriteString(pt.Styler.Middle())
-		}
-	}
-	b.WriteString(pt.Styler.Right())
-	b.WriteString("\n")
+	pt.writeRow(b,
+		colWidths,
+		pt.header)
 
 	pt.writeLine(b, colWidths,
 		pt.Styler.Left(),
@@ -196,21 +203,9 @@ func (pt *PrettyTable) Outout(b StringWriter) {
 	for _, v := range pt.rowsStr {
 		// TODO: padding/centers
 		// TOOD: multi-line strings
-		b.WriteString(pt.Styler.Left())
-		for i, cell := range v {
-			cstr := padString(
-				cell,
-				colWidths[i],
-				" ",
-				pt.Styler.Alignment())
-
-			b.WriteString(cstr)
-			if i < len(v)-1 {
-				b.WriteString(pt.Styler.Middle())
-			}
-		}
-		b.WriteString(pt.Styler.Right())
-		b.WriteString("\n")
+		pt.writeRow(b,
+			colWidths,
+			v)
 	}
 
 	pt.writeLine(b, colWidths,
