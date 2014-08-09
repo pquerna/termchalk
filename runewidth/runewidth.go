@@ -15,7 +15,7 @@
  *
  */
 
-package termwidth
+package runewidth
 
 import (
 	"regexp"

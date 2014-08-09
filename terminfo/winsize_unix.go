@@ -1,3 +1,4 @@
+// +build linux darwin freebsd
 /**
  *  Copyright 2014 Paul Querna
  *
@@ -15,25 +16,19 @@
  *
  */
 
-package termwidth
+package terminfo
 
 import (
-	"github.com/pquerna/termchalk/ansistyle"
-	"testing"
+	"syscall"
+	"unsafe"
 )
 
-func TestSimple(t *testing.T) {
+const ioctlReadWinSize = syscall.TIOCGWINSZ
 
-	if Width("foo") != 3 {
-		t.Fatal("foo should be 3 wide.")
-	}
-
-	if Width("\uFF26oo") != 4 {
-		t.Fatal("\uFF26oo should be 4 wide.")
-	}
-
-	s := ansistyle.Red.Open + "Red!" + ansistyle.Red.Close
-	if Width(s) != 4 {
-		t.Fatal(s + " should be 4 wide, even with escape codes.")
-	}
+func getwinsize() winsize {
+	ws := winsize{}
+	syscall.Syscall(syscall.SYS_IOCTL,
+		uintptr(0), uintptr(ioctlReadWinSize),
+		uintptr(unsafe.Pointer(&ws)))
+	return ws
 }

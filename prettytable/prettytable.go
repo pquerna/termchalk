@@ -20,7 +20,7 @@ package prettytable
 import (
 	"bytes"
 	"fmt"
-	"github.com/pquerna/termchalk/termwidth"
+	"github.com/pquerna/termchalk/runewidth"
 	"sort"
 	"strings"
 )
@@ -74,7 +74,7 @@ func cellStr(v interface{}) string {
 func longestLine(s string) int {
 	rv := 0
 	for _, v := range strings.Split(s, "\n") {
-		rv = intMax(termwidth.Width(v), rv)
+		rv = intMax(runewidth.Width(v), rv)
 	}
 	return rv
 }
@@ -101,7 +101,7 @@ func (pt *PrettyTable) colWidths() []int {
 	widths := make([]int, len(pt.header))
 	padding := pt.Styler.Padding() * 2
 	for i, v := range pt.header {
-		widths[i] = termwidth.Width(v) + padding
+		widths[i] = runewidth.Width(v) + padding
 	}
 
 	for _, row := range pt.rows {

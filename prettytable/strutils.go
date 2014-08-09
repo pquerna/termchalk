@@ -18,7 +18,8 @@
 package prettytable
 
 import (
-	"github.com/pquerna/termchalk/termwidth"
+	_ "github.com/kr/text"
+	"github.com/pquerna/termchalk/runewidth"
 	"math"
 	"strings"
 )
@@ -32,7 +33,7 @@ const (
 )
 
 func padString(s string, l int, padChr string, direction PadDirection) string {
-	slen := termwidth.Width(s)
+	slen := runewidth.Width(s)
 	if l+1 >= slen {
 		switch direction {
 		case PadLeft:
