@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/pquerna/termchalk/runewidth"
+	"github.com/pquerna/termchalk/terminfo"
 	"sort"
 	"strings"
 )
@@ -95,6 +96,7 @@ func (pt *PrettyTable) styleData() {
 
 	pt.header = headers
 	pt.rowsStr = rows
+	pt.rows = nil
 }
 
 func (pt *PrettyTable) colWidths() []int {
@@ -118,8 +120,33 @@ func (pt *PrettyTable) colWidths() []int {
 	return widths
 }
 
-func (pt *PrettyTable) String() string {
-	b := bytes.Buffer{}
+type StringWriter interface {
+	WriteString(s string) (n int, err error)
+}
+
+func (pt *PrettyTable) writeLine(b StringWriter, widths []int,
+	left string, line string, mid string, right string) {
+
+	b.WriteString(left)
+	for i, v := range widths {
+		b.WriteString(strings.Repeat(line, v))
+		if i < len(widths)-1 {
+			b.WriteString(mid)
+		}
+	}
+	b.WriteString(right)
+	b.WriteString("\n")
+}
+
+func (pt *PrettyTable) Outout(b StringWriter) {
+
+	termwidth := terminfo.WindowWidth()
+
+	// if stdout isn't a terminal, eg we are piped to a log
+	// do the most reasonable thing: 80 characters wide.
+	if termwidth == 0 {
+		termwidth = 80
+	}
 
 	if pt.SortBy != "" {
 		n := pos(pt.SortBy, pt.header)
@@ -137,16 +164,11 @@ func (pt *PrettyTable) String() string {
 
 	colWidths := pt.colWidths()
 
-	// TODO: refactor
-	b.WriteString(pt.Styler.TopLeft())
-	for i, v := range colWidths {
-		b.WriteString(strings.Repeat(pt.Styler.Top(), v))
-		if i < len(colWidths)-1 {
-			b.WriteString(pt.Styler.TopMid())
-		}
-	}
-	b.WriteString(pt.Styler.TopRight())
-	b.WriteString("\n")
+	pt.writeLine(b, colWidths,
+		pt.Styler.TopLeft(),
+		pt.Styler.Top(),
+		pt.Styler.TopMid(),
+		pt.Styler.TopRight())
 
 	b.WriteString(pt.Styler.Left())
 	for i, v := range pt.header {
@@ -165,15 +187,11 @@ func (pt *PrettyTable) String() string {
 	b.WriteString(pt.Styler.Right())
 	b.WriteString("\n")
 
-	b.WriteString(pt.Styler.Left())
-	for i, v := range colWidths {
-		b.WriteString(strings.Repeat(pt.Styler.Mid(), v))
-		if i < len(colWidths)-1 {
-			b.WriteString(pt.Styler.MidMid())
-		}
-	}
-	b.WriteString(pt.Styler.Right())
-	b.WriteString("\n")
+	pt.writeLine(b, colWidths,
+		pt.Styler.Left(),
+		pt.Styler.Mid(),
+		pt.Styler.MidMid(),
+		pt.Styler.Right())
 
 	for _, v := range pt.rowsStr {
 		// TODO: padding/centers
@@ -195,16 +213,16 @@ func (pt *PrettyTable) String() string {
 		b.WriteString("\n")
 	}
 
-	// TODO: refactor
-	b.WriteString(pt.Styler.BottomLeft())
-	for i, v := range colWidths {
-		b.WriteString(strings.Repeat(pt.Styler.Bottom(), v))
-		if i < len(colWidths)-1 {
-			b.WriteString(pt.Styler.BottomMid())
-		}
-	}
-	b.WriteString(pt.Styler.BottomRight())
-	b.WriteString("\n")
+	pt.writeLine(b, colWidths,
+		pt.Styler.BottomLeft(),
+		pt.Styler.Bottom(),
+		pt.Styler.BottomMid(),
+		pt.Styler.BottomRight())
 
+}
+
+func (pt *PrettyTable) String() string {
+	b := bytes.Buffer{}
+	pt.Outout(&b)
 	return b.String()
 }
